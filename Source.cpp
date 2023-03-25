@@ -166,6 +166,12 @@ class LinkedList {
 			}
 			return return_vector;
 		}
+		void replace_listnodes_with_vector_values(std::vector<int> inputvector) {
+			remove_entire_list();
+			for (int i = 0; i < inputvector.size(); i++) {
+				append_item(inputvector[i]);
+			}
+		}
 };
 
 int main() {
@@ -183,13 +189,30 @@ int main() {
 	std::cout << "print after deleting first element: " << std::endl;
 	test_list.remove_item_at_position(0);
 	test_list.print_list();
+
+	//Adapter pattern, converting the linked list into vector:
+	std::vector<int> converted_vector = test_list.convert_to_vector();
+
+	std::cout << "print vector: " << std::endl;
+
+	for (int i = 0; i < converted_vector.size(); i++) {
+		std::cout << converted_vector[i] << " ";
+	}
+	std::cout << std::endl;
+
 	std::cout << "delete entire list then add 5: " << std::endl;
 	test_list.remove_entire_list();
 	test_list.append_item(5);
 	test_list.print_list();
 
-	//Adapter pattern, converting the linked list into vector:
-	std::vector<int> converted_vector = test_list.convert_to_vector();
+	//Adapter pattern, converting vector to linked list
+
+	std::vector<int> input_vector = {1,2,3,4,5,6,7,8};
+	std::cout << "replace list with vector values: " << std::endl;
+
+	test_list.replace_listnodes_with_vector_values(input_vector);
+	test_list.print_list();
+
 
 	return 0;
 }
