@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 //#include "SDL.h"
+#include "unittest.h"
 
 typedef double ListDataType;
 
@@ -166,6 +167,11 @@ class LinkedList {
 			}
 			list_head = nullptr;
 	    }
+		size_t length() {
+			size_t counter = 0;
+			for (ListDataType val : *this) { counter++; };
+			return counter;
+		};
 		ListNode* find_by_value(ListDataType value) {
 			ListNode* current = list_head;
 			while (current != nullptr) {
@@ -223,51 +229,112 @@ class LinkedList {
 		};
 };
 
+class TestLinkedListIteratorStrategy : public ProcessDataStrategy {
+private:
+	ListNode* cur_node;
+	bool is_the_same_data = true;
+public:
+        TestLinkedListIteratorStrategy(ListNode* _cur_node)
+		: cur_node {_cur_node}
+		{};
+	virtual void process(ListDataType data) {
+		if (cur_node->data != data) is_the_same_data = false;
+		cur_node = cur_node->next;
+	};
+	bool is_ok () { return is_the_same_data;};
+};
 
-int main() {
+class CompareLinkedListToVectorStrategy : public ProcessDataStrategy {
+private:
+	std::vector<ListDataType> vector;
+	size_t counter;
+	bool is_the_same_data;
+public:
+        CompareLinkedListToVectorStrategy(std::vector<ListDataType> _vector)
+		: vector {_vector},
+		  counter {0},
+		  is_the_same_data {true}
+		{};
+	virtual void process(ListDataType data) {
+		if (vector[counter] != data) is_the_same_data = false;
+		counter++;
+	};
+	bool is_ok () { return is_the_same_data;};
+};
+
+bool is_the_same_content (LinkedList* list, std::vector<ListDataType> vector) {
+	if (list->length() != vector.size()) return false;
+	CompareLinkedListToVectorStrategy contentTest(vector);
+	list->process(contentTest);
+	return contentTest.is_ok();
+}
+
+void linkedlist_selftest_unittests() {
+	unittest T = unittest("LinkedList self test");
 
 	LinkedList test_list;
+	T.ok(0 == test_list.length());
 
 	test_list.append_item(1);
+	T.ok(1 == test_list.length());
 	test_list.append_item(5);
+	T.ok(2 == test_list.length());
 	test_list.append_item(9);
+	T.ok(3 == test_list.length());
 	test_list.add_item_after_position(6, 1);
+	T.ok(4 == test_list.length());
+	/*
 	std::cout << "print: " << std::endl;
 	test_list.print_list();
 	std::cout << "print reverse: " << std::endl;
 	test_list.print_reverse();
-	std::cout << "print after deleting first element: " << std::endl;
+	*/
+	T.ok(is_the_same_content(&test_list, std::vector<ListDataType> {1,6,5,9}));
+
+	//std::cout << "print after deleting first element: " << std::endl;
 	test_list.remove_item_at_position(0);
-	test_list.print_list();
+	T.ok(3 == test_list.length());
+	//test_list.print_list();
+	T.ok(is_the_same_content(&test_list, std::vector<ListDataType> {6,5,9}));
+
 
 	//Adapter pattern, converting the linked list into vector:
 	std::vector<ListDataType> converted_vector = test_list.convert_to_vector();
-
+	T.ok(3 == converted_vector.size());
+	/*
 	std::cout << "print vector: " << std::endl;
 
 	for (int i = 0; i < converted_vector.size(); i++) {
 		std::cout << converted_vector[i] << " ";
 	}
 	std::cout << std::endl;
-
-	std::cout << "delete entire list then add 5: " << std::endl;
+	*/
+	//std::cout << "delete entire list then add 5: " << std::endl;
 	test_list.remove_entire_list();
+	T.ok(0 == test_list.length());
 	test_list.append_item(5);
-	test_list.print_list();
+	T.ok(1 == test_list.length());
+	T.ok(is_the_same_content(&test_list, std::vector<ListDataType> {5}));
+	//test_list.print_list();
 
 	//Adapter pattern, converting vector to linked list
-
+	//std::cout << "replace list with vector values: " << std::endl;
 	std::vector<ListDataType> input_vector = {1,2,3,4,5,6,7,8};
-	std::cout << "replace list with vector values: " << std::endl;
-
 	test_list.replace_listnodes_with_vector_values(input_vector);
-	test_list.print_list();
+	T.ok(8 == test_list.length());
+	T.ok(is_the_same_content(&test_list, std::vector<ListDataType> {1,2,3,4,5,6,7,8}));
+	//test_list.print_list();
 
-	// Iterator
+	// Iterator syntax test
 	for (ListDataType val: test_list) {};
 
-	DebugStrategy debugPrint;
-	test_list.process(debugPrint);
+	TestLinkedListIteratorStrategy iteratorTest(test_list.get_list_head());
+	test_list.process(iteratorTest);
+	T.ok(iteratorTest.is_ok());
+	//DebugStrategy debugPrint;
+	//test_list.process(debugPrint);
+}
 
-	return 0;
+int main() {
+	linkedlist_selftest_unittests();
 }
