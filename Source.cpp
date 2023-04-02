@@ -1,11 +1,33 @@
 #include <iostream>
 #include <vector>
+//#include "SDL.h"
+
+typedef double ListDataType;
 
 struct ListNode {
-	int data;
+	ListDataType data;
 	ListNode* prev;
 	ListNode* next;
 };
+
+//Strategy Design pattern:
+
+class ProcessDataStrategy {
+    public:
+	virtual void process(ListDataType data) = 0;
+};
+
+
+class DebugStrategy {
+private:
+	int i;
+public:
+	virtual void process(ListDataType data) {
+		std::cout << i << ":" << data << std::endl;
+		i++;
+	};
+};
+
 
 class LinkedList {
     protected:
@@ -15,7 +37,7 @@ class LinkedList {
 			list_head = nullptr;
 		}
 		ListNode* get_list_head() { return list_head; };
-		void append_item(int data) {
+		void append_item(ListDataType data) {
 			ListNode* new_node = new ListNode;
 			new_node->data = data;
 			new_node->next = nullptr;
@@ -42,7 +64,7 @@ class LinkedList {
 			std::cout << std::endl;
 		}
 		// add item to list after specific position (1 is after first element, 2 is after second element)
-		void add_item_after_position(int data, std::size_t position) {
+		void add_item_after_position(ListDataType data, std::size_t position) {
 			ListNode* new_node = new ListNode;
 			new_node->data = data;
 			new_node->next = nullptr;
@@ -144,7 +166,7 @@ class LinkedList {
 			}
 			list_head = nullptr;
 	    }
-		ListNode*& find_by_value(int value) {
+		ListNode* find_by_value(ListDataType value) {
 			ListNode* current = list_head;
 			while (current != nullptr) {
 				if (current->data == value) {
@@ -155,10 +177,11 @@ class LinkedList {
 				current = current->next;
 			}
 			std::cout << "no node with value " << value << " found" << std::endl;
+			return nullptr;
 		}
 		//Adapter Pattern, between linked list and vector:
-		std::vector<int> convert_to_vector() {
-			std::vector<int> return_vector;
+		std::vector<ListDataType> convert_to_vector() {
+			std::vector<ListDataType> return_vector;
 			ListNode* current = list_head;
 			while (current != nullptr) {
 				return_vector.push_back(current->data);
@@ -166,13 +189,40 @@ class LinkedList {
 			}
 			return return_vector;
 		}
-		void replace_listnodes_with_vector_values(std::vector<int> inputvector) {
+		void replace_listnodes_with_vector_values(std::vector<ListDataType> inputvector) {
 			remove_entire_list();
 			for (int i = 0; i < inputvector.size(); i++) {
 				append_item(inputvector[i]);
 			}
 		}
+		//Iterator Pattern:
+		class iterator : public std::iterator<
+			std::input_iterator_tag,   // iterator_category
+			ListDataType,                      // value_type
+			ListDataType,                      // difference_type
+			const ListDataType*,               // pointer
+			ListDataType                       // reference
+		> {
+			ListNode* where = nullptr;
+		public:
+			explicit iterator(ListNode* _where = nullptr) : where(_where) {}
+			iterator& operator++() {
+			    if(where != nullptr){ where = where->next;};
+			    return *this;
+			}
+			iterator operator++(int) { iterator retval = *this; ++(*this); return retval; }
+			bool operator==(iterator other) const { return where == other.where; }
+			bool operator!=(iterator other) const { return !(*this == other); }
+			reference operator*() const { return where->data; }
+		};
+		iterator begin() { return iterator(list_head); }
+		iterator end() { return iterator(nullptr); }
+
+		void process(ProcessDataStrategy& processor) {
+			for (ListDataType val: *this) {processor.process(val);};
+		};
 };
+
 
 int main() {
 
@@ -191,7 +241,7 @@ int main() {
 	test_list.print_list();
 
 	//Adapter pattern, converting the linked list into vector:
-	std::vector<int> converted_vector = test_list.convert_to_vector();
+	std::vector<ListDataType> converted_vector = test_list.convert_to_vector();
 
 	std::cout << "print vector: " << std::endl;
 
@@ -207,12 +257,14 @@ int main() {
 
 	//Adapter pattern, converting vector to linked list
 
-	std::vector<int> input_vector = {1,2,3,4,5,6,7,8};
+	std::vector<ListDataType> input_vector = {1,2,3,4,5,6,7,8};
 	std::cout << "replace list with vector values: " << std::endl;
 
 	test_list.replace_listnodes_with_vector_values(input_vector);
 	test_list.print_list();
 
+	// Iterator
+	for (ListDataType val: test_list) {};
 
 	return 0;
 }
