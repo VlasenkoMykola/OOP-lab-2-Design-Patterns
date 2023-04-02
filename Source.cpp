@@ -18,9 +18,9 @@ class ProcessDataStrategy {
 };
 
 
-class DebugStrategy {
+class DebugStrategy : public ProcessDataStrategy {
 private:
-	int i;
+	int i = 0;
 public:
 	virtual void process(ListDataType data) {
 		std::cout << i << ":" << data << std::endl;
@@ -265,6 +265,9 @@ int main() {
 
 	// Iterator
 	for (ListDataType val: test_list) {};
+
+	DebugStrategy debugPrint;
+	test_list.process(debugPrint);
 
 	return 0;
 }
