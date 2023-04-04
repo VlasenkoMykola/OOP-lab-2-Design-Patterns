@@ -1,7 +1,10 @@
+#define _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING 1
+
 #include <iostream>
 #include <vector>
 //#include "SDL.h"
 #include "unittest.h"
+//#include "RandLib.h"
 
 typedef double ListDataType;
 
@@ -28,6 +31,44 @@ public:
 		i++;
 	};
 };
+
+class DataAnalysisStrategy : public ProcessDataStrategy {
+public:
+	virtual ListDataType result() = 0;
+};
+
+class MinVal : public DataAnalysisStrategy {
+private:
+	ListDataType min;
+public:
+	virtual void process(ListDataType data) {
+		if (min > data) min = data;
+	};
+	virtual ListDataType result() { return min; };
+};
+
+class MaxVal : public DataAnalysisStrategy {
+private:
+	ListDataType max;
+public:
+	virtual void process(ListDataType data) {
+		if (max < data) max = data;
+	};
+	virtual ListDataType result() { return max; };
+};
+
+class MeanVal : public DataAnalysisStrategy {
+private:
+	ListDataType mean;
+	int n = 0;
+public:
+	virtual void process(ListDataType data) {
+		mean += data;
+		n++;
+	};
+	virtual ListDataType result() { return mean / n; };
+};
+
 
 
 class LinkedList {
@@ -337,4 +378,10 @@ void linkedlist_selftest_unittests() {
 
 int main() {
 	linkedlist_selftest_unittests();
+	/*
+	NormalRand X(0, 1);
+	std::vector<double> data(1e6);
+	X.Sample(data);
+	*/
+
 }
