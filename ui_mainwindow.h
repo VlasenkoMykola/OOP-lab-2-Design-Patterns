@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
@@ -28,6 +29,7 @@ public:
     QComboBox *comboBox;
     QGraphicsView *graphicsView;
     QPushButton *generateButton;
+    QLabel *infoLabel;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -35,7 +37,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(800, 480);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         comboBox = new QComboBox(centralwidget);
@@ -47,6 +49,9 @@ public:
         generateButton = new QPushButton(centralwidget);
         generateButton->setObjectName(QString::fromUtf8("generateButton"));
         generateButton->setGeometry(QRect(250, 50, 80, 23));
+        infoLabel = new QLabel(centralwidget);
+        infoLabel->setObjectName(QString::fromUtf8("infoLabel"));
+        infoLabel->setGeometry(QRect(30, 120, 301, 301));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -65,6 +70,7 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         generateButton->setText(QApplication::translate("MainWindow", "Generate >", nullptr));
+        infoLabel->setText(QApplication::translate("MainWindow", "<html><head/><body><p>Distribution Info:<br/>name:</p><p><br/></p><p><br/></p><p>Histogram Info:<br/>steps:<br/>min displayed:<br/>max displayed:<br/>height:</p></body></html>", nullptr));
     } // retranslateUi
 
 };

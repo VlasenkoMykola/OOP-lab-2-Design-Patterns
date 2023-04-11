@@ -4,7 +4,7 @@
 #include <vector>
 //#include "SDL.h"
 #include "unittest.h"
-#include "RandLib.h"
+#include <cmath>
 
 //typedef double ListDataType;
 #include "ListDataType.h"
@@ -215,19 +215,6 @@ void linkedlist_selftest_unittests() {
 
 #include "DataAnalysis.h"
 
-void print_data_analysis(DataAnalysis& analysis) {
-	std::cout << analysis.name << ":" << std::endl;
-	std::cout << "min   = " << analysis.min << std::endl;
-	std::cout << "max   = " << analysis.max << std::endl;
-	std::cout << "mean  = " << analysis.mean << std::endl;
-	std::cout << "sigma = " << analysis.sigma << std::endl;
-	std::cout << "histogram:" << std::endl;
-	for (int height: analysis.histogram) {
-		std::cout << height << "|";
-	}
-	std::cout << std::endl;
-}
-
 void process_sample (std::vector<double>& data, DataAnalysis& analysis) {
 	LinkedList data_list;
 	for (double val: data) data_list.append_item(val);
@@ -252,21 +239,5 @@ void process_sample (std::vector<double>& data, DataAnalysis& analysis) {
 		if (cell > height) height = cell;
 	};
 	analysis.histogramHeight = height;
-	print_data_analysis(analysis);
-}
-
-DataAnalysis data_analysis() {
-	//int sample_total = 10000;
-	std::vector<double> data(10000);
-
-	NormalRand X(0, 1);
-	X.Sample(data);
-
-	DataAnalysis analysis;
-	analysis.name = "Normal(0,1)";
-	analysis.histogramSteps = 100;
-	analysis.histogramMin = -4;
-	analysis.histogramMax = 4;
-	process_sample(data, analysis);
-	return analysis;
+	analysis.print();
 }
