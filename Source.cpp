@@ -91,12 +91,12 @@ private:
 	ListDataType min, max, histogram_scale;
 	std::vector<ListDataType> box;
 public:
-	HistogramSum(ListDataType _min, ListDataType _max, int _steps)
+	HistogramSum(ListDataType _histogram_min, ListDataType _histogram_max, int _steps)
 		: steps {_steps},
-		  min {_min},
-		  max {_max}
+		  min {_histogram_min},
+		  max {_histogram_max}
 		{
-			histogram_scale = steps / (_max - _min);
+			histogram_scale = steps / (_histogram_max - _histogram_min);
 			box.resize(steps);
 		};
 	virtual void process(ListDataType data) {
