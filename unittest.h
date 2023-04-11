@@ -19,7 +19,7 @@ public:
 	~unittest() {
 		cout << "test " << testname << " ";
 		if (30 - testname.size() > 0) {
-			for (int i = 0; i < 30 - testname.size(); i++)
+			for (unsigned int i = 0; i < 30 - testname.size(); i++)
 				cout << ".";
 		}
 		cout << passed << "/" << testcount;
@@ -48,12 +48,12 @@ public:
 		if (arg) {
 			passed++;
 			if (testverbose)
-				cout << "test " << testname << " " << testcount << " passed." << endl;
+				cout << "test " << testname << " " << testcount << " [" << message << "] passed." << endl;
 		}
 		else {
 			failed++;
 			if (testverbose)
-				cout << "test " << testname << " " << testcount << " failed." << endl;
+				cout << "test " << testname << " " << testcount << " [" << message << "] failed." << endl;
 		}
 	}
 	//void done() {};
